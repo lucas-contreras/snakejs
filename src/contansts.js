@@ -4,3 +4,15 @@ export const SNAKE_KEYS = {
   S: 115,
   D: 100,
 };
+
+export const SNAKE_DIRECTION = {
+  UP: "UP",
+  RIGHT: "RIGHT",
+  DOWN: "DOWN",
+  LEFT: "LEFT",
+};
+
+export const SNAKE_DEFAULT_SIZE = {
+  heigth: 30,
+  width: 30,
+};
