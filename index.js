@@ -1,91 +1,64 @@
+import Collision from "./src/collision";
 import Snake from "./src/snake";
-import { SNAKE_KEYS, SNAKE_DIRECTION } from "./src/contansts";
-
-const snake = new Snake();
-
-// snake.getCurrentDirection();
-// snake.move();
+import {
+  SNAKE_KEYS,
+  SNAKE_DIRECTION,
+  SNAKE_DEFAULT_SIZE,
+} from "./src/contansts";
+import Food from "./src/food";
 
 window.onload = function () {
-  const div = document.getElementById("some");
-
-  if (div) {
-    div.style.cursor = "pointer";
-    div.addEventListener("click", function (ev) {
-      alert("hello from lala");
-    });
-
-    div.addEventListener("keypress", function (ev) {
-      // console.log(ev.keyCode, ev.key, ev.altKey);
-      if (ev.keyCode === SNAKE_KEYS.D) {
-        snake.setCurrentDirection(SNAKE_DIRECTION.LEFT);
-      }
-
-      if (ev.keyCode === SNAKE_KEYS.S) {
-        snake.setCurrentDirection(SNAKE_DIRECTION.DOWN);
-      }
-
-      if (ev.keyCode === SNAKE_KEYS.A) {
-        snake.setCurrentDirection(SNAKE_DIRECTION.RIGHT);
-      }
-
-      if (ev.keyCode === SNAKE_KEYS.W) {
-        snake.setCurrentDirection(SNAKE_DIRECTION.UP);
-      }
-
-      snake.getCurrentDirection();
-    });
-  }
+  const snake = new Snake();
+  const food = new Food();
 
   const canvas = document.getElementById("stage");
   const stage = canvas.getContext("2d");
 
-  canvas.addEventListener("mousemove", function (e) {
-    // const { x, y } = e;
-
-    // console.log(e);
-
-    const x = e.offsetX || e.layerX;
-    const y = e.offsetY || e.layerY;
-
-    // stage.fillRect(x, y, 20, 20);
-  });
-
   canvas.addEventListener("keypress", function (e) {
-    // const { x, y } = e;
-
-    // console.log(e);
-
-    // const x = e.offsetX || e.layerX;
-    // const y = e.offsetY || e.layerY;
-
-    // stage.fillRect(x, y, 20, 20);
-
     switch (e.keyCode) {
       case SNAKE_KEYS.W: {
-        snake.setCurrentDirection(SNAKE_DIRECTION.UP);
+        snake.setDirection(SNAKE_DIRECTION.UP);
         break;
       }
       case SNAKE_KEYS.D: {
-        snake.setCurrentDirection(SNAKE_DIRECTION.RIGHT);
+        snake.setDirection(SNAKE_DIRECTION.RIGHT);
         break;
       }
       case SNAKE_KEYS.S: {
-        snake.setCurrentDirection(SNAKE_DIRECTION.DOWN);
+        snake.setDirection(SNAKE_DIRECTION.DOWN);
         break;
       }
       case SNAKE_KEYS.A: {
-        snake.setCurrentDirection(SNAKE_DIRECTION.LEFT);
+        snake.setDirection(SNAKE_DIRECTION.LEFT);
         break;
       }
       default: {
-        break;
+        return;
       }
     }
 
     snake.move();
-    const { x, y } = snake.getHeadPosition();
+    food.createFood();
 
-    stage.fillRect(x, y, 20, 20);
+    const eaten = Collision.isCollided(snake, food);
+
+    if (eaten) {
+      snake.increase();
+      food.resetMakingFood();
+      food.createFood();
+    }
+
+    const { x: snakePosX, y: snakePosY } = snake.getPosition();
+    const { x: foodPosX, y: foodPosY } = food.getPosition();
+
+    stage.clearRect(0, 0, 420, 420);
+    stage.fillRect(
+      snakePosX,
+      snakePosY,
+      SNAKE_DEFAULT_SIZE.w,
+      SNAKE_DEFAULT_SIZE.h
+    );
+
+    stage.fillRect(foodPosX, foodPosY, 15, 15);
   });
 };

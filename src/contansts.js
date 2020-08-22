@@ -13,6 +13,21 @@ export const SNAKE_DIRECTION = {
 };
 
 export const SNAKE_DEFAULT_SIZE = {
-  heigth: 30,
-  width: 30,
+  h: 30,
+  w: 30,
+};
+
+export const STAGE_SIZE = {
+  h: 420,
+  w: 420,
+};
+
+export const FOOD_POSITION = {
+  x: 0,
+  y: 0,
+};
+
+export const FOOD_DEFAULT_SIZE = {
+  w: 20,
+  h: 20,
 };

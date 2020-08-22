@@ -1,73 +1,87 @@
 // import Body from "./snakeBody";
 // import Head from "./snakeHead";
-import { SNAKE_DIRECTION, SNAKE_DEFAULT_SIZE } from "./contansts";
+import Block from "./block";
+import { SNAKE_DIRECTION, SNAKE_DEFAULT_SIZE, STAGE_SIZE } from "./contansts";
 
-export default class Snake {
+export default class Snake extends Block {
   constructor(props = {}) {
-    this.currentDirection = props.direction || SNAKE_DIRECTION.RIGHT;
-    this.headPosition = {
-      x: 0,
-      y: 0,
-    };
-    this.size = props.size || SNAKE_DEFAULT_SIZE;
+    super({
+      position: props.position,
+      size: props.size || SNAKE_DEFAULT_SIZE,
+    });
+
+    this.direction = props.direction || SNAKE_DIRECTION.RIGHT;
+    this.quantity = 1;
   }
 
-  getCurrentDirection() {
-    console.log(this.currentDirection);
-    return this.currentDirection;
+  getDirection() {
+    return this.direction;
   }
 
-  setCurrentDirection(direction) {
-    this.currentDirection = direction;
+  setDirection(direction) {
+    this.direction = direction;
   }
 
-  getHeadPosition() {
-    return this.headPosition;
+  getQuantity() {
+    return this.quantity;
   }
 
-  setHeadPosition(x, y) {
-    this.headPosition = { x, y };
-  }
-
-  getSize() {
-    return this.size;
-  }
-
-  setSize(heigth, width) {
-    this.size = {
-      heigth,
-      width,
-    };
+  setQuantity(quantity) {
+    this.quantity = quantity;
   }
 
   move() {
-    switch (this.getCurrentDirection()) {
+    const { w: snakeWidth, h: snakeHeigth } = this.getSize();
+    const { x, y } = this.getPosition();
+
+    switch (this.getDirection()) {
       case SNAKE_DIRECTION.UP: {
-        const y = Math.abs(this.getHeadPosition().y - this.getSize().heigth);
-        this.setHeadPosition(this.getHeadPosition().x, y);
+        let posY = y - snakeHeigth;
+
+        if (posY < 0) {
+          posY = STAGE_SIZE.h - snakeWidth;
+        }
+
+        this.setPosition(x, posY);
         break;
       }
       case SNAKE_DIRECTION.RIGHT: {
-        const x = this.getSize().width + this.getHeadPosition().x;
-        this.setHeadPosition(x, this.getHeadPosition().y);
+        let posX = x + snakeWidth;
+
+        if (posX + snakeWidth > STAGE_SIZE.w) {
+          posX = 0;
+        }
+
+        this.setPosition(posX, y);
         break;
       }
       case SNAKE_DIRECTION.DOWN: {
-        const y = this.getSize().heigth + this.getHeadPosition().y;
-        this.setHeadPosition(this.getHeadPosition().x, y);
+        let posY = y + snakeHeigth;
+
+        if (posY + snakeWidth > STAGE_SIZE.h) {
+          posY = 0;
+        }
+
+        this.setPosition(x, posY);
         break;
       }
       case SNAKE_DIRECTION.LEFT: {
-        const x = Math.abs(this.getHeadPosition().x - this.getSize().width);
-        this.setHeadPosition(x, this.getHeadPosition().y);
+        let posX = x - snakeWidth;
+
+        if (posX < 0) {
+          posX = STAGE_SIZE.w - snakeWidth;
+        }
+
+        this.setPosition(posX, y);
         break;
       }
     }
-
-    console.log(this.getHeadPosition());
   }
 
-  increaseSize() {
-    console.log("i'm bigger");
+  increase() {
+    const quantity = this.getQuantity() + 1;
+
+    this.setQuantity(quantity);
+    console.log("i'm bigger ", this.getQuantity());
   }
 }
