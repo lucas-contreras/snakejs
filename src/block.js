@@ -1,12 +1,15 @@
+import { STAGE_SIZE } from "./contansts";
+
 const BLOCK_DEFAULTS = {
   POSITION: { x: 0, y: 0 },
-  SIZE: { h: 1, y: 1 },
+  SIZE: { h: 10, y: 10 },
 };
 
 export default class Block {
   constructor(props = {}) {
     this.position = props.position || BLOCK_DEFAULTS.POSITION;
     this.size = props.size || BLOCK_DEFAULTS.SIZE;
+    this.speed = 1;
   }
 
   getPosition() {
@@ -23,5 +26,21 @@ export default class Block {
 
   setSize(h, w) {
     this.size = { h, w };
+  }
+
+  getSpeed() {
+    return this.speed;
+  }
+
+  setSpeed(speed) {
+    this.speed = speed;
+  }
+
+  draw() {
+    throw new Error("Should implement in children");
+  }
+
+  update() {
+    this.draw();
   }
 }

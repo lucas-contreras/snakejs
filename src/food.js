@@ -2,33 +2,54 @@ import Block from "./block";
 import { FOOD_POSITION, FOOD_DEFAULT_SIZE, STAGE_SIZE } from "./contansts";
 
 export default class Food extends Block {
-  constructor(props = {}) {
+  constructor(props = {}, stage) {
     super({
       position: props.position || FOOD_POSITION,
       size: props.size || FOOD_DEFAULT_SIZE,
     });
 
-    this.makeFood = false;
+    this.createNewFood = true;
+    this.stage = stage;
   }
 
-  getMakeFood() {
-    return this.makeFood;
+  getCreateNewFood() {
+    return this.createNewFood;
   }
 
-  setMakeFood(create) {
-    this.makeFood = create;
+  setCreateNewFood(create) {
+    this.createNewFood = create;
   }
 
-  resetMakingFood() {
-    this.setMakeFood(false);
+  resetCreationNewFood() {
+    this.setCreateNewFood(true);
   }
 
-  createFood() {
-    if (this.getMakeFood()) return;
-    const posX = Math.floor(Math.random() * STAGE_SIZE.h);
-    const posY = Math.floor(Math.random() * STAGE_SIZE.w);
-
-    this.setPosition(posX, posY);
-    this.setMakeFood(true);
+  hasStage() {
+    return !!this.stage;
   }
+
+  draw() {
+    if (this.hasStage()) {
+      const { x, y } = this.getPosition();
+      const { w, h } = this.getSize();
+
+      this.stage.fillRect(x, y, w, h);
+    }
+  }
+
+  update() {
+    if (this.getCreateNewFood()) {
+      
+      const { h, w } = this.getSize();
+      const posX = Math.floor(Math.random() * STAGE_SIZE.h) - w;
+      const posY = Math.floor(Math.random() * STAGE_SIZE.w) - h;
+
+      this.setPosition(posX, posY);
+      this.setCreateNewFood(false);
+
+      this.draw();
+    }
+  }
+
+  createFood() {}
 }
