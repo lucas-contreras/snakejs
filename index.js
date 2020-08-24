@@ -44,7 +44,7 @@ window.onload = function () {
 		const wasEaten = Collision.hasRectCollision(snake, food);
 
 		if (wasEaten) {
-			snake.increase();
+			snake.increaseSize();
 			food.resetCreationNewFood();
 		}
 	};
