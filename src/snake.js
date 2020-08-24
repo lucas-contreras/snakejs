@@ -1,134 +1,85 @@
-import SnakeBody from "./snakeBody";
-import Block from "./block";
-import { STAGE_SIZE } from "./contansts";
-
-export const SNAKE_DIRECTION = {
-  UP: "UP",
-  RIGHT: "RIGHT",
-  DOWN: "DOWN",
-  LEFT: "LEFT",
-};
+import SnakeBody from './snakeBody';
+import Block, { BLOCK_DIRECTION } from './block';
 
 export const SNAKE_DEFAULT_SIZE = {
-  h: 30,
-  w: 30,
+	h: 30,
+	w: 30,
 };
 
 export default class Snake extends Block {
-  constructor(props = {}, stage) {
-    super({
-      position: props.position,
-      size: props.size || SNAKE_DEFAULT_SIZE,
-    });
+	constructor(props = {}, stage) {
+		super({ ...props, size: props.size || SNAKE_DEFAULT_SIZE }, stage);
 
-    this.direction = props.direction || SNAKE_DIRECTION.RIGHT;
-    this.quantity = 0;
+		this.quantity = 0;
+		this.snakeBody = [];
+		this.locationHistory = [{ x: 0, y: 0, direction: BLOCK_DIRECTION.RIGHT }];
+	}
 
-    this.stage = stage;
-    this.snakeBody = [];
-  }
+	setDirection(direction) {
+		this.direction = direction;
 
-  getDirection() {
-    return this.direction;
-  }
+		// if (this.getQuantity()) {
+		// 	this.locationHistory.push({
+		// 		...this.getPosition(),
+		// 		direction,
+		// 	});
 
-  setDirection(direction) {
-    this.direction = direction;
-  }
+		// 	console.log(this.locationHistory);
+		// }
+	}
 
-  getQuantity() {
-    return this.snakeBody.length;
-  }
+	getQuantity() {
+		return this.snakeBody.length;
+	}
 
-  hasStage() {
-    return !!this.stage;
-  }
+	draw() {
+		if (this.hasStage()) {
+			const { x, y } = this.getPosition();
+			const { w, h } = this.getSize();
 
-  draw() {
-    if (this.hasStage()) {
-      const { x, y } = this.getPosition();
-      const { w, h } = this.getSize();
+			// head snake
+			this.stage.fillRect(x, y, w, h);
 
-      // head snake
-      this.stage.fillRect(x, y, w, h);
+			this.snakeBody.forEach((body) => {
+				body.update();
+			});
+		}
+	}
 
-      this.snakeBody.forEach((body, index, self) => {
-		let position = body.getPosition();
-		let size = body.getSize();
-		// continue here!
-        if (index > 0) {
+	update() {
+		const newPosition = this.calculatePosition();
 
-        }
+		// this.snakeBody.forEach((body, index, self) => {
+		// 	/* first element must be taken from head position */
+		// 	if (index > 0) {
+		// 		const prevBody = self[index - 1];
+		// 		const prevPosition = prevBody.calculatePosition(true);
 
-        // this.stage.fillRect(position.x, position.y, size.w, size.h);
-        // this.stage.fillRect(x - position.x, y - position.y, w, h);
-      });
-    }
-  }
+		// 		body.setPosition(prevPosition.posX, prevPosition.posY);
+		// 	}
+		// });
 
-  update() {
-    const { w: snakeWidth, h: snakeHeigth } = this.getSize();
-    const { x, y } = this.getPosition();
-    const speed = this.getSpeed();
+		// if (this.getQuantity()) {
+		// 	const body = this.snakeBody[0];
+		// 	const newBodyPosition = this.calculatePosition(true);
 
-    switch (this.getDirection()) {
-      case SNAKE_DIRECTION.UP: {
-        let posY = y - speed;
+		// 	body.setDirection(this.getDirection());
+		// 	body.setPosition(newBodyPosition.posX, newBodyPosition.posY);
+		// }
 
-        if (posY < 0) {
-          posY = STAGE_SIZE.h - snakeHeigth;
-        }
+		this.setPosition(newPosition.posX, newPosition.posY);
+		this.draw();
+	}
 
-        this.setPosition(x, posY);
-        break;
-      }
-      case SNAKE_DIRECTION.RIGHT: {
-        let posX = x + speed;
+	increaseSize() {
+		const body = {
+			position: { ...this.getPosition() },
+			direction: this.getDirection(),
+			size: { ...this.getSize() },
+		};
 
-        if (posX + snakeWidth > STAGE_SIZE.w) {
-          posX = 0;
-        }
+		this.snakeBody.push(new SnakeBody(body, this.stage));
 
-        this.setPosition(posX, y);
-        break;
-      }
-      case SNAKE_DIRECTION.DOWN: {
-        let posY = y + speed;
-
-        if (posY + snakeHeigth > STAGE_SIZE.h) {
-          posY = 0;
-        }
-
-        this.setPosition(x, posY);
-        break;
-      }
-      case SNAKE_DIRECTION.LEFT: {
-        let posX = x - speed;
-
-        if (posX < 0) {
-          posX = STAGE_SIZE.w - snakeWidth;
-        }
-
-        this.setPosition(posX, y);
-        break;
-      }
-      default: {
-        throw new Error("Direction no specified");
-      }
-    }
-
-    this.draw();
-  }
-
-  increaseSize() {
-    const body = {
-      position: { ...this.getPosition() },
-      size: { ...this.getSize() },
-    };
-
-    this.snakeBody.push(new SnakeBody(body));
-
-    console.log(this.snakeBody);
-    console.log(this.getQuantity());
-  }
+		console.log(this.snakeBody);
+	}
 }

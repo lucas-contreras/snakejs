@@ -1,6 +1,7 @@
 import Collision from './src/collision';
-import Snake, { SNAKE_DIRECTION } from './src/snake';
-import { SNAKE_KEYS, STAGE_SIZE } from './src/contansts';
+import { BLOCK_DIRECTION } from './src/block';
+import Snake from './src/snake';
+import { SNAKE_KEYS, STAGE_SIZE, SNAKE_DEFAULT_SIZE } from './src/contansts';
 import Food from './src/food';
 
 window.onload = function () {
@@ -13,19 +14,19 @@ window.onload = function () {
 	canvas.addEventListener('keypress', function (e) {
 		switch (e.keyCode) {
 			case SNAKE_KEYS.W: {
-				snake.setDirection(SNAKE_DIRECTION.UP);
+				snake.setDirection(BLOCK_DIRECTION.UP);
 				break;
 			}
 			case SNAKE_KEYS.D: {
-				snake.setDirection(SNAKE_DIRECTION.RIGHT);
+				snake.setDirection(BLOCK_DIRECTION.RIGHT);
 				break;
 			}
 			case SNAKE_KEYS.S: {
-				snake.setDirection(SNAKE_DIRECTION.DOWN);
+				snake.setDirection(BLOCK_DIRECTION.DOWN);
 				break;
 			}
 			case SNAKE_KEYS.A: {
-				snake.setDirection(SNAKE_DIRECTION.LEFT);
+				snake.setDirection(BLOCK_DIRECTION.LEFT);
 				break;
 			}
 			default: {
