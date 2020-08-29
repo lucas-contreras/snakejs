@@ -1,10 +1,22 @@
-import Block from './block';
+import Block, { BLOCK_DIRECTION } from "./block";
 
 export default class SnakeBody extends Block {
 	constructor(props = {}, stage) {
-		super({ ...props }, stage);
+		super(props, stage);
 
-		this.locationHistory = props.locationHistory || [];
+		this.nextPositions = props.nextPositions || [];
+	}
+
+	getNextPosition() {
+		return this.nextPositions;
+	}
+
+	setNextPosition(nextPosition) {
+		this.nextPositions.push(nextPosition);
+	}
+
+	removeFirstPosition() {
+		return this.nextPositions.shift();
 	}
 
 	draw() {
@@ -16,28 +28,46 @@ export default class SnakeBody extends Block {
 		}
 	}
 
+	updatePosition() {
+		const position = this.getPosition();
+
+		switch (this.getDirection()) {
+			case BLOCK_DIRECTION.UP: {
+				this.setPosition(position.x, position.y + this.size.w);
+				break;
+			}
+			case BLOCK_DIRECTION.RIGHT: {
+				this.setPosition(position.x - this.size.h, position.y);
+				break;
+			}
+			case BLOCK_DIRECTION.DOWN: {
+				this.setPosition(position.x, position.y - this.size.w);
+				break;
+			}
+			case BLOCK_DIRECTION.LEFT: {
+				this.setPosition(position.x + this.size.h, position.y);
+				break;
+			}
+			default: {
+				throw new Error("Direction no specified");
+			}
+		}
+	}
+
 	update() {
-		const newPosition = this.calculatePosition();
+		const position = this.getPosition();
+		const nextMove = this.getNextPosition()[0];
 
-		// this.snakeBody.forEach((body, index, self) => {
-		// 	/* first element must be taken from head position */
-		// 	if (index > 0) {
-		// 		const prevBody = self[index - 1];
-		// 		const prevPosition = prevBody.calculatePosition(true);
+		if (nextMove) {
+			if (position.x === nextMove.x && position.y === nextMove.y) {
+				this.setDirection(nextMove.direction);
+				this.removeFirstPosition();
+			}
+		}
 
-		// 		body.setPosition(prevPosition.posX, prevPosition.posY);
-		// 	}
-		// });
+		const { posX, posY } = this.calculatePosition();
+		this.setPosition(posX, posY);
 
-		// if (this.getQuantity()) {
-		// 	const body = this.snakeBody[0];
-		// 	const newBodyPosition = this.calculatePosition(true);
-
-		// 	body.setDirection(this.getDirection());
-		// 	body.setPosition(newBodyPosition.posX, newBodyPosition.posY);
-		// }
-
-		this.setPosition(newPosition.posX, newPosition.posY);
 		this.draw();
 	}
 }

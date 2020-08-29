@@ -1,5 +1,5 @@
-import Block from './block';
-import { STAGE_SIZE } from './contansts';
+import Block from "./block";
+import { STAGE_SIZE } from "./contansts";
 
 export const FOOD_DEFAULT_POSITION = {
 	x: 0,
@@ -32,10 +32,6 @@ export default class Food extends Block {
 
 	resetCreationNewFood() {
 		this.setCreateNewFood(true);
-	}
-
-	hasStage() {
-		return !!this.stage;
 	}
 
 	draw() {

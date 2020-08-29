@@ -1,35 +1,33 @@
-import SnakeBody from './snakeBody';
-import Block, { BLOCK_DIRECTION } from './block';
-
-export const SNAKE_DEFAULT_SIZE = {
-	h: 30,
-	w: 30,
-};
+import Block, { BLOCK_DIRECTION } from "./block";
+import SnakeBody from "./snakeBody";
 
 export default class Snake extends Block {
 	constructor(props = {}, stage) {
-		super({ ...props, size: props.size || SNAKE_DEFAULT_SIZE }, stage);
+		super(props, stage);
 
 		this.quantity = 0;
 		this.snakeBody = [];
-		this.locationHistory = [{ x: 0, y: 0, direction: BLOCK_DIRECTION.RIGHT }];
+		this.prevMovement = [];
+	}
+
+	getPrevMovement() {
+		return this.prevMovement;
+	}
+
+	getQuantity() {
+		return this.snakeBody.length;
 	}
 
 	setDirection(direction) {
 		this.direction = direction;
 
-		// if (this.getQuantity()) {
-		// 	this.locationHistory.push({
-		// 		...this.getPosition(),
-		// 		direction,
-		// 	});
+		if (this.getQuantity()) {
+			this.snakeBody.forEach((body) => {
+				body.setNextPosition({ ...this.getPosition(), direction });
+			});
 
-		// 	console.log(this.locationHistory);
-		// }
-	}
-
-	getQuantity() {
-		return this.snakeBody.length;
+			console.log(this.snakeBody);
+		}
 	}
 
 	draw() {
@@ -48,38 +46,25 @@ export default class Snake extends Block {
 
 	update() {
 		const newPosition = this.calculatePosition();
-
-		// this.snakeBody.forEach((body, index, self) => {
-		// 	/* first element must be taken from head position */
-		// 	if (index > 0) {
-		// 		const prevBody = self[index - 1];
-		// 		const prevPosition = prevBody.calculatePosition(true);
-
-		// 		body.setPosition(prevPosition.posX, prevPosition.posY);
-		// 	}
-		// });
-
-		// if (this.getQuantity()) {
-		// 	const body = this.snakeBody[0];
-		// 	const newBodyPosition = this.calculatePosition(true);
-
-		// 	body.setDirection(this.getDirection());
-		// 	body.setPosition(newBodyPosition.posX, newBodyPosition.posY);
-		// }
-
 		this.setPosition(newPosition.posX, newPosition.posY);
+
 		this.draw();
 	}
 
 	increaseSize() {
-		const body = {
+		const bodyProps = {
 			position: { ...this.getPosition() },
 			direction: this.getDirection(),
-			size: { ...this.getSize() },
 		};
 
-		this.snakeBody.push(new SnakeBody(body, this.stage));
+		if (this.getQuantity()) {
+			const lastBody = this.snakeBody[this.getQuantity() - 1];
+			bodyProps.position = { ...lastBody.getPosition() };
+		}
 
-		console.log(this.snakeBody);
+		const body = new SnakeBody(bodyProps, this.stage);
+		body.updatePosition();
+
+		this.snakeBody.push(body);
 	}
 }

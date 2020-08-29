@@ -1,66 +1,73 @@
-import { STAGE_SIZE } from './contansts';
+import { STAGE_SIZE } from "./contansts";
+
+export const BLOCK_DEFAULT_POSITION = {
+	x: 0,
+	y: 0,
+};
 
 export const BLOCK_DIRECTION = {
-	UP: 'UP',
-	RIGHT: 'RIGHT',
-	DOWN: 'DOWN',
-	LEFT: 'LEFT',
+	UP: "UP",
+	RIGHT: "RIGHT",
+	DOWN: "DOWN",
+	LEFT: "LEFT",
 };
 
-const BLOCK_DEFAULTS = {
-	POSITION: { x: 0, y: 0 },
-	SIZE: { h: 10, w: 10 },
+export const BLOCK_SIZE = {
+	h: 30,
+	w: 30,
 };
 
-const SPEED_DEFAULT = 1;
+const SPEED_DEFAULT = 2;
 
 export default class Block {
 	constructor(props = {}, stage) {
-		this.position = props.position || BLOCK_DEFAULTS.POSITION;
+		this.position = props.position || BLOCK_DEFAULT_POSITION;
 		this.direction = props.direction || BLOCK_DIRECTION.RIGHT;
-		this.size = props.size || BLOCK_DEFAULTS.SIZE;
+		this.size = props.size || BLOCK_SIZE;
 		this.stage = stage;
 	}
 
+	/* Getters */
 	getPosition() {
 		return this.position;
-	}
-
-	setPosition(x, y) {
-		this.position = { x, y };
 	}
 
 	getDirection() {
 		return this.direction;
 	}
 
-	setDirection(direction) {
-		this.direction = direction;
-	}
-
 	getSize() {
 		return this.size;
 	}
 
-	setSize(h, w) {
-		this.size = { h, w };
-	}
-
-	hasStage() {
-		return !!this.stage;
-	}
-
-	getFullCoordinates() {
+	getCoordinates() {
 		const { x, y } = this.getPosition();
 		const { h, w } = this.getSize();
 
 		return { x1: x, x2: x + w, y1: y, y2: y + h };
 	}
 
-	calculatePosition() {
-		const { position, direction, size } = this;
+	hasStage() {
+		return !!this.stage;
+	}
 
-		switch (direction) {
+	/* Setters */
+	setPosition(x, y) {
+		this.position = { x, y };
+	}
+
+	setDirection(direction) {
+		this.direction = direction;
+	}
+
+	setSize(h, w) {
+		this.size = { h, w };
+	}
+
+	calculatePosition() {
+		const { position, size } = this;
+
+		switch (this.getDirection()) {
 			case BLOCK_DIRECTION.UP: {
 				let posY = position.y - SPEED_DEFAULT;
 
@@ -98,13 +105,13 @@ export default class Block {
 				return { posX, posY: position.y };
 			}
 			default: {
-				throw new Error('Direction no specified');
+				throw new Error("Direction no specified");
 			}
 		}
 	}
 
 	draw() {
-		throw new Error('Should implement in children');
+		throw new Error("Should implement in children");
 	}
 
 	update() {
