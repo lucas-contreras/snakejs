@@ -1,9 +1,9 @@
-import Block, { BLOCK_DIRECTION } from "./block";
-import SnakeBody from "./snakeBody";
+import Block, { BLOCK_DIRECTION } from './block';
+import SnakeBody from './snakeBody';
 
 export default class Snake extends Block {
-	constructor(props = {}, stage) {
-		super(props, stage);
+	constructor(props = {}) {
+		super(props);
 
 		this.quantity = 0;
 		this.snakeBody = [];
@@ -18,53 +18,41 @@ export default class Snake extends Block {
 		return this.snakeBody.length;
 	}
 
+	getLastBlock() {
+		return this.snakeBody[this.getQuantity() - 1];
+	}
+
 	setDirection(direction) {
 		this.direction = direction;
 
-		if (this.getQuantity()) {
-			this.snakeBody.forEach((body) => {
-				body.setNextPosition({ ...this.getPosition(), direction });
-			});
-
-			console.log(this.snakeBody);
-		}
+		this.snakeBody.forEach((body, index) => {
+			body.setNextPosition({ ...this.getPosition(), direction });
+		});
 	}
 
 	draw() {
-		if (this.hasStage()) {
-			const { x, y } = this.getPosition();
-			const { w, h } = this.getSize();
+		const { x, y } = this.getPosition();
+		const { w, h } = this.getSize();
 
-			// head snake
-			this.stage.fillRect(x, y, w, h);
+		// head snake
+		this.getContext2d().fillRect(x, y, w, h);
 
-			this.snakeBody.forEach((body) => {
-				body.update();
-			});
-		}
+		this.snakeBody.forEach((body) => {
+			body.update();
+		});
 	}
 
 	update() {
-		const newPosition = this.calculatePosition();
-		this.setPosition(newPosition.posX, newPosition.posY);
+		const { posX, posY } = this.calculatePosition();
+		this.setPosition(posX, posY);
 
 		this.draw();
 	}
 
 	increaseSize() {
-		const bodyProps = {
-			position: { ...this.getPosition() },
-			direction: this.getDirection(),
-		};
+		const body = new SnakeBody(this.clone());
 
-		if (this.getQuantity()) {
-			const lastBody = this.snakeBody[this.getQuantity() - 1];
-			bodyProps.position = { ...lastBody.getPosition() };
-		}
-
-		const body = new SnakeBody(bodyProps, this.stage);
-		body.updatePosition();
-
+		body.updatePosition(this.getQuantity() + 1);
 		this.snakeBody.push(body);
 	}
 }

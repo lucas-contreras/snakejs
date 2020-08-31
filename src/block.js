@@ -1,4 +1,4 @@
-import { STAGE_SIZE } from "./contansts";
+import { STAGE_SIZE } from './contansts';
 
 export const BLOCK_DEFAULT_POSITION = {
 	x: 0,
@@ -6,10 +6,10 @@ export const BLOCK_DEFAULT_POSITION = {
 };
 
 export const BLOCK_DIRECTION = {
-	UP: "UP",
-	RIGHT: "RIGHT",
-	DOWN: "DOWN",
-	LEFT: "LEFT",
+	UP: 'UP',
+	RIGHT: 'RIGHT',
+	DOWN: 'DOWN',
+	LEFT: 'LEFT',
 };
 
 export const BLOCK_SIZE = {
@@ -17,14 +17,14 @@ export const BLOCK_SIZE = {
 	w: 30,
 };
 
-const SPEED_DEFAULT = 2;
+const SPEED_DEFAULT = 5;
 
 export default class Block {
-	constructor(props = {}, stage) {
+	constructor(props = {}) {
 		this.position = props.position || BLOCK_DEFAULT_POSITION;
 		this.direction = props.direction || BLOCK_DIRECTION.RIGHT;
 		this.size = props.size || BLOCK_SIZE;
-		this.stage = stage;
+		this.canvasId = props.canvasId;
 	}
 
 	/* Getters */
@@ -40,15 +40,19 @@ export default class Block {
 		return this.size;
 	}
 
+	getCanvas() {
+		return document.getElementById(this.canvasId);
+	}
+
+	getContext2d() {
+		return this.getCanvas().getContext('2d');
+	}
+
 	getCoordinates() {
 		const { x, y } = this.getPosition();
 		const { h, w } = this.getSize();
 
 		return { x1: x, x2: x + w, y1: y, y2: y + h };
-	}
-
-	hasStage() {
-		return !!this.stage;
 	}
 
 	/* Setters */
@@ -105,13 +109,17 @@ export default class Block {
 				return { posX, posY: position.y };
 			}
 			default: {
-				throw new Error("Direction no specified");
+				throw new Error('Direction no specified');
 			}
 		}
 	}
 
+	clone() {
+		return Object.assign({}, this);
+	}
+
 	draw() {
-		throw new Error("Should implement in children");
+		throw new Error('Should implement in children');
 	}
 
 	update() {

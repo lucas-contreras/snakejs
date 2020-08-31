@@ -8,8 +8,8 @@ window.onload = function () {
 	const canvas = document.getElementById('stage');
 	const stage = canvas.getContext('2d');
 
-	const snake = new Snake({}, stage);
-	const food = new Food({}, stage);
+	const snake = new Snake({ canvasId: 'stage' });
+	const food = new Food({ canvasId: 'stage' });
 
 	canvas.addEventListener('keypress', function (e) {
 		switch (e.keyCode) {
