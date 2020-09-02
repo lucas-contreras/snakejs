@@ -19,19 +19,15 @@ export default class Food extends Block {
 			size: props.size || FOOD_DEFAULT_SIZE,
 		});
 
-		this.createNewFood = true;
+		this.isNewFood = true;
 	}
 
-	getCreateNewFood() {
-		return this.createNewFood;
+	getIsNewFood() {
+		return this.isNewFood;
 	}
 
-	setCreateNewFood(create) {
-		this.createNewFood = create;
-	}
-
-	resetCreationNewFood() {
-		this.setCreateNewFood(true);
+	setIsNewFood(isNew) {
+		this.isNewFood = isNew;
 	}
 
 	draw() {
@@ -42,13 +38,12 @@ export default class Food extends Block {
 	}
 
 	update() {
-		if (this.getCreateNewFood()) {
-			const { h, w } = this.getSize();
-			const posX = Math.floor(Math.random() * STAGE_SIZE.h) - w;
-			const posY = Math.floor(Math.random() * STAGE_SIZE.w) - h;
+		if (this.getIsNewFood()) {
+			const posX = Math.floor(Math.random() * STAGE_SIZE.h);
+			const posY = Math.floor(Math.random() * STAGE_SIZE.w);
 
 			this.setPosition(posX, posY);
-			this.setCreateNewFood(false);
+			this.setIsNewFood(false);
 		}
 
 		this.draw();

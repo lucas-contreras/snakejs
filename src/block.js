@@ -17,7 +17,7 @@ export const BLOCK_SIZE = {
 	w: 30,
 };
 
-const SPEED_DEFAULT = 5;
+export const SPEED_DEFAULT = 5;
 
 export default class Block {
 	constructor(props = {}) {
@@ -61,22 +61,53 @@ export default class Block {
 	}
 
 	setDirection(direction) {
-		this.direction = direction;
+		if (this.validateDirection(direction)) {
+			this.direction = direction;
+		}
 	}
 
 	setSize(h, w) {
 		this.size = { h, w };
 	}
 
-	calculatePosition() {
-		const { position, size } = this;
+	validateDirection(direction) {
+		if (this.getDirection() === BLOCK_DIRECTION.RIGHT) {
+			if (direction === BLOCK_DIRECTION.LEFT) {
+				return false;
+			}
+		}
+
+		if (this.getDirection() === BLOCK_DIRECTION.LEFT) {
+			if (direction === BLOCK_DIRECTION.RIGHT) {
+				return false;
+			}
+		}
+
+		if (this.getDirection() === BLOCK_DIRECTION.UP) {
+			if (direction === BLOCK_DIRECTION.DOWN) {
+				return false;
+			}
+		}
+
+		if (this.getDirection() === BLOCK_DIRECTION.DOWN) {
+			if (direction === BLOCK_DIRECTION.UP) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	calculatePosition({ position, size } = {}) {
+		position = position || this.getPosition();
+		size = size || this.getSize();
 
 		switch (this.getDirection()) {
 			case BLOCK_DIRECTION.UP: {
 				let posY = position.y - SPEED_DEFAULT;
 
-				if (posY < 0) {
-					posY = STAGE_SIZE.h - size.h;
+				if (posY + size.h < 0) {
+					posY = STAGE_SIZE.h;
 				}
 
 				return { posX: position.x, posY };
@@ -84,8 +115,8 @@ export default class Block {
 			case BLOCK_DIRECTION.RIGHT: {
 				let posX = position.x + SPEED_DEFAULT;
 
-				if (posX + size.w > STAGE_SIZE.w) {
-					posX = 0;
+				if (posX > STAGE_SIZE.w) {
+					posX = -size.w;
 				}
 
 				return { posX, posY: position.y };
@@ -93,8 +124,8 @@ export default class Block {
 			case BLOCK_DIRECTION.DOWN: {
 				let posY = position.y + SPEED_DEFAULT;
 
-				if (posY + size.h > STAGE_SIZE.h) {
-					posY = 0;
+				if (posY > STAGE_SIZE.h) {
+					posY = -size.h;
 				}
 
 				return { posX: position.x, posY };
@@ -102,14 +133,14 @@ export default class Block {
 			case BLOCK_DIRECTION.LEFT: {
 				let posX = position.x - SPEED_DEFAULT;
 
-				if (posX < 0) {
-					posX = STAGE_SIZE.w - size.w;
+				if (posX + size.w < 0) {
+					posX = STAGE_SIZE.w;
 				}
 
 				return { posX, posY: position.y };
 			}
 			default: {
-				throw new Error('Direction no specified');
+				throw new Error('Direction was not specified');
 			}
 		}
 	}

@@ -1,5 +1,3 @@
-import Block from './block';
-
 export default class Collision {
 	static hasRectCollision(rect1, rect2) {
 		const cord1 = rect1.getCoordinates();

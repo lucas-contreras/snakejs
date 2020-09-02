@@ -1,58 +1,81 @@
-import Block, { BLOCK_DIRECTION } from './block';
 import SnakeBody from './snakeBody';
+import SnakeHead from './snakeHead';
 
-export default class Snake extends Block {
+export default class Snake {
 	constructor(props = {}) {
-		super(props);
-
-		this.quantity = 0;
-		this.snakeBody = [];
-		this.prevMovement = [];
+		this.canvasId = props.canvasId;
+		this.body = [];
 	}
 
-	getPrevMovement() {
-		return this.prevMovement;
+	/* Set all properties of snake */
+	init() {
+		this.createHead();
 	}
 
-	getQuantity() {
-		return this.snakeBody.length;
+	getHead() {
+		return this.head;
 	}
 
-	getLastBlock() {
-		return this.snakeBody[this.getQuantity() - 1];
+	setHeadDirection(direction) {
+		this.head.setDirection(direction);
+
+		this.notify(this.head.getCurrentPositionAndDirection());
 	}
 
-	setDirection(direction) {
-		this.direction = direction;
+	addBody(body) {
+		this.body.push(body);
+	}
 
-		this.snakeBody.forEach((body, index) => {
-			body.setNextPosition({ ...this.getPosition(), direction });
+	removeBody(body) {
+		const found = this.body.findIndex((b) => b === body);
+		if (body > -1) {
+			this.body.splice(found, 1);
+		}
+	}
+
+	notify(data) {
+		this.body.forEach((b) => {
+			b.setNextPosition(data);
 		});
 	}
 
-	draw() {
-		const { x, y } = this.getPosition();
-		const { w, h } = this.getSize();
+	createHead() {
+		if (!this.head) {
+			this.head = new SnakeHead({ canvasId: this.canvasId });
+		}
 
-		// head snake
-		this.getContext2d().fillRect(x, y, w, h);
+		return this.getHead();
+	}
 
-		this.snakeBody.forEach((body) => {
-			body.update();
-		});
+	createBody() {
+		if (this.head) {
+			const body = new SnakeBody({
+				...this.head.clone(),
+				order: this.body.length + 1,
+			});
+
+			body.setInitialPosition();
+			return body;
+		}
+
+		return undefined;
+	}
+
+	increase(food) {
+		if (!this.head) {
+			throw new Error("Head wasn't created yet");
+		}
+
+		if (this.head.eatFood(food)) {
+			food.setIsNewFood(true);
+
+			const body = this.createBody();
+			this.addBody(body);
+		}
 	}
 
 	update() {
-		const { posX, posY } = this.calculatePosition();
-		this.setPosition(posX, posY);
-
-		this.draw();
-	}
-
-	increaseSize() {
-		const body = new SnakeBody(this.clone());
-
-		body.updatePosition(this.getQuantity() + 1);
-		this.snakeBody.push(body);
+		this.head.update();
+		this.body.forEach((b) => b.update());
 	}
 }

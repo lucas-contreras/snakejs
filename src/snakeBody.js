@@ -1,18 +1,50 @@
-import Block, { BLOCK_DIRECTION } from './block';
+import Block, { BLOCK_DIRECTION, SPEED_DEFAULT } from './block';
 
 export default class SnakeBody extends Block {
 	constructor(props = {}) {
 		super(props);
 
 		this.nextPositions = props.nextPositions || [];
+		this.order = props.order;
 	}
 
+	/* Getters */
 	getNextPosition() {
-		return this.nextPositions;
+		return this.nextPositions[0];
+	}
+
+	getOrder() {
+		return this.order;
 	}
 
 	setNextPosition(nextPosition) {
 		this.nextPositions.push(nextPosition);
+	}
+
+	setInitialPosition() {
+		const position = Object.assign({}, this.getPosition());
+
+		switch (this.getDirection()) {
+			case BLOCK_DIRECTION.UP: {
+				position.y = position.y + this.size.h * this.getOrder() + SPEED_DEFAULT;
+				break;
+			}
+			case BLOCK_DIRECTION.RIGHT: {
+				position.x = position.x - this.size.w * this.getOrder() - SPEED_DEFAULT;
+				break;
+			}
+			case BLOCK_DIRECTION.DOWN: {
+				position.y = position.y - this.size.h * this.getOrder() - SPEED_DEFAULT;
+				break;
+			}
+			case BLOCK_DIRECTION.LEFT: {
+				position.x = position.x + this.size.w * this.getOrder() + SPEED_DEFAULT;
+				break;
+			}
+		}
+
+		const { posX, posY } = this.calculatePosition({ position });
+		this.setPosition(posX, posY);
 	}
 
 	removeFirstPosition() {
@@ -26,35 +58,9 @@ export default class SnakeBody extends Block {
 		this.getContext2d().fillRect(x, y, w, h);
 	}
 
-	updatePosition(quantity = 1) {
-		const position = this.getPosition();
-
-		switch (this.getDirection()) {
-			case BLOCK_DIRECTION.UP: {
-				this.setPosition(position.x, position.y + this.size.w * quantity);
-				break;
-			}
-			case BLOCK_DIRECTION.RIGHT: {
-				this.setPosition(position.x - this.size.h * quantity, position.y);
-				break;
-			}
-			case BLOCK_DIRECTION.DOWN: {
-				this.setPosition(position.x, position.y - this.size.w * quantity);
-				break;
-			}
-			case BLOCK_DIRECTION.LEFT: {
-				this.setPosition(position.x + this.size.h * quantity, position.y);
-				break;
-			}
-			default: {
-				throw new Error('Direction no specified');
-			}
-		}
-	}
-
 	update() {
 		const position = this.getPosition();
-		const nextMove = this.getNextPosition()[0];
+		const nextMove = this.getNextPosition();
 
 		if (nextMove) {
 			if (position.x === nextMove.x && position.y === nextMove.y) {
